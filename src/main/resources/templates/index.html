@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 페이지</title>
+
+  <!--captcha v3-->
+  <script src="https://www.google.com/recaptcha/api.js"></script>
+  <script>
+    function onSubmit(token) {
+      document.getElementById("#limiter").submit();
+    }
+  </script>
+
+  <!--captcha v2-->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="css/util2.css">
+  <link rel="stylesheet" type="text/css" href="css/main2.css">
+
+  <script>
+
+    // recaptcha 확인
+    function recaptcha() {
+        let response = grecaptcha.getResponse();
+
+        let sendToken = {
+            secret: "6LcTUa4ZAAAAAEOs4hOYluQfjoeDnIFGlbEfl0LM",
+            response: response
+        }
+        if (response.length != 0) {
+            $.ajax({
+                type: "post",
+                url: "https://www.google.com/recaptcha/api/siteverify",
+                data: sendToken,
+                success: function (data) {
+                    console.log(data);
+                    goLogin();
+                },
+                error: function (data) {
+                    alert("잘못된 요청 입니다.");
+                }
+            })
+        } else {
+            alert("니가 로봇이 아님을 증명 하라!");
+            postIndex();
+        }
+    }
+
+    function postIndex() {
+        $.ajax({
+            type: "post",
+            url: "login",
+            success: function () {
+
+            },
+            error: function () {
+
+            }
+
+        })
+
+
+    }
+    // 로그인 하기
+      function goLogin() {
+
+          let obj = {
+              id: $("#memberId").val(),
+              pw: $("#memberPw").val()
+          }
+
+          $.ajax({
+              type: "post",
+              url: "login",
+              data: obj,
+              success: function (data) {
+                  goSuccess();
+              },
+              error: function (data) {
+                  goFail();
+              }
+          });
+      }
+
+    // 로그인 성공시 성공 페이지로 이동
+    function goSuccess() {
+        window.location.href="success";
+    }
+    // 로그인 실패시 실패 페이지로 이동
+    function goFail() {
+        window.location.href="fail";
+    }
+
+  </script>
+
+</head>
+<body>
+<div class="limiter" id="limiter">
+  <div class="container-login100">
+    <div class="wrap-login100">
+      <!--<form class="login100-form validate-form" action="login" method="post">-->
+      <form class="login100-form validate-form">
+          <span class="login100-form-title">
+              Member Login
+            </span>
+
+        <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+          <input class="input100" type="text" name="memberId" id="memberId" placeholder="Id">
+          <span class="focus-input100"></span>
+          <span class="symbol-input100">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+              </span>
+        </div>
+
+        <div class="wrap-input100 validate-input" data-validate="Password is required">
+          <input class="input100" type="password" name="memberPw" id="memberPw" placeholder="Password">
+          <span class="focus-input100"></span>
+          <span class="symbol-input100">
+                <i class="fa fa-lock" aria-hidden="true"></i>
+              </span>
+        </div>
+
+        <!--reCaptcha v3-->
+        <!--<button class="g-recaptcha"
+                data-sitekey="6Lf_T64ZAAAAAGAoM9KMMjRIn1BigUr2d02_B9yw"
+                data-callback='onSubmit'
+                data-action='submit'>Submit</button>-->
+
+        <!--reCaptcha v2-->
+        <!--<form method="post" action="#" onsubmit="validReCaptcha()">-->
+        <!--<div class="g-recaptcha" data-sitekey="6LcTUa4ZAAAAANJCp0fgsysI48Z3ZvTaTbCVfnx7" style="margin-left: 20px"></div>-->
+        <!--<input type="submit" value="버튼">
+      </form>-->
+        <br/>
+        <div id="clicker">
+          <div class="container-login100-form-btn">
+            <input type="button" class="login100-form-btn" onclick="recaptcha()" value="Login">
+            <!--<input type="button" class="login100-form-btn" id="login" value="LogIn">-->
+          </div>
+
+          <div class="text-center p-t-12">
+                <span class="txt1">
+                  Forgot
+                </span>
+            <a class="txt2" href="#">
+              Username / Password?
+            </a>
+          </div>
+
+          <div class="text-center p-t-136">
+            <a class="txt2" href="goJoin">
+              Create your Account
+              <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+      <div class="g-recaptcha" data-sitekey="6LcTUa4ZAAAAANJCp0fgsysI48Z3ZvTaTbCVfnx7" id="recaptcha"></div>
+    </div>
+  </div>
+</div>
+</body>
+
+<style>
+  #clicker {
+    position: relative;
+    top: 70px;
+  }
+  #recaptcha {
+    position: relative;
+    left: 140px;
+    bottom: 230px;
+
+  }
+</style>
+</html>
+
